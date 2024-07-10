@@ -1,0 +1,36 @@
+html{
+    overflow-x: hidden;
+}
+h1{
+ color: bisque;
+}
+
+body{
+    background-color: blueviolet;
+
+}
+.grid-col-3{
+    display: grid;
+    width: 100vw;
+    height: auto;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+}
+#beds {
+    display: grid;
+    width: 100px;
+    height: 100px;
+    background-color: whitesmoke;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    justify-items: center; /* Ensure grid items are centered */
+    align-items: center;   /* Ensure grid items are centered */
+}
+
+#bedAncor {
+    place-self: center;
+    text-align: center;
+    color: inherit; /* Change this to any desired color */
+    text-decoration: none;
+}
+

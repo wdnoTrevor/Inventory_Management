@@ -1,0 +1,26 @@
+<%- include('../partials/headerHome') %>
+
+<body>
+    <h1>Update <%= farmBed.name %></h1>
+
+<form action="/beds/<%= farmBed._id %>?_method=PUT" method="POST">
+    <input type="text" name="bed.name" id="bed.name" placeholder="<%= farmBed.bed.name %>" value="<%= farmBed.bed.name %>">
+    <input type="number" name="bed.size.x" id="bed.size.x" placeholder="<%= farmBed.bed.size.x %>" value="<%= farmBed.bed.size.x %>">
+    <input type="number" name="bed.size.y" id="bed.size.y" placeholder="<%= farmBed.bed.size.y %>" value="<%= farmBed.bed.size.y %>">
+    <input type="number" name="bed.pos.hor" id="bed.pos.hor" placeholder="<%= farmBed.bed.pos.hor %>" value="<%= farmBed.bed.pos.hor %>">
+    <input type="number" name="bed.pos.ver" id="bed.pos.ver" placeholder="<%= farmBed.bed.pos.ver %>" value="<%= farmBed.bed.pos.ver %>">
+
+    <!-- <label for="name">Change Name</label>
+    <input type="text " name="name" id="name" placeholder="<%= farmBed.name %>" value="<%= farmBed.name %>">
+    <label for="weight">Change weight</label>
+    <input type="number" name="weight" id="weight" placeholder="<%= farmBed.weight %>" value="<%= farmBed.weight %>">
+    <label for="weightUnit">Change Unit</label>
+    <select name="weightUnit" id="unit">
+        <option value="pounds">lbs</option>
+        <option value="grams">g</option>
+    </select> -->
+    <button>Submit</button>
+</form>
+<a href="/beds">All Beds</a>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<%- include('../partials/headerHome') %>
+<body>
+    <h1>Beds</h1>
+    
+    <ul>
+
+       <div class="grid-col-3">
+        <% for(bed of farmBed) {%>
+            <div id="beds"><a id="bedAncor" href="/beds/<%= bed._id %>"><%= bed.bed.name %></a></div>
+            <% } %>
+        </div>
+    </ul>
+
+    <a href="/beds/create">Create a Bed</a>
+</body>
+</html>

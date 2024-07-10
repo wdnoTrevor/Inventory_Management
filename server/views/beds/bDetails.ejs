@@ -1,0 +1,34 @@
+<%- include('../partials/headerHome') %>
+
+<body>
+    <h1> <%= farmBed.bed.name %> Bed Details</h1>
+    <ul>
+            <li>bed name is  <%= farmBed.bed.name %></li>           
+            <li>bed size X is  <%= farmBed.bed.size.x %></li>           
+            <li>bed size Y is  <%= farmBed.bed.size.y %></li>           
+            <li>bed horizontal position is  <%= farmBed.bed.pos.hor %></li>           
+            <li>bed vertical position is  <%= farmBed.bed.pos.ver %></li>           
+            
+    </ul>
+    <a href="/beds/<%= farmBed._id %>/update">Update Bed</a>
+    <div><a href="/beds">All Beds</a></div>
+    <form action="/beds/<%=farmBed._id%>?_method=DELETE" method="POST">
+        <button>Delete Bed</button>
+    </form>
+
+
+    <a href="/<%= farmBed._id %>/product/create">Create Product</a>
+    <a href="/<%= farmBed._id %>/products">All Products</a>
+    
+    <!-- <ul>
+
+        <div class="grid-col-3">
+         <% for(product of products) {%>
+             <div id="beds"><a id="bedAncor" href=""><%= product.name %></a></div>
+             <% } %>
+         </div>
+     </ul> -->
+
+
+</body>
+</html>

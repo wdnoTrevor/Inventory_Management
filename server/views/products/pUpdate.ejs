@@ -1,0 +1,26 @@
+<%- include('../partials/headerHome') %>
+
+<body>
+    <h1>Update Products</h1>
+
+<form action="/products/<%= product._id %>?_method=PUT" method="POST">
+    <input type="text" name="name" id="name" placeholder="name" value="<%= product.name %>">
+    <input type="number" name="weight" id="weight" placeholder="item weight" value="<%= product.weight %>">
+
+    
+    <!-- <label for="name">Enter Name</label>
+    <input type="text " name="name" id="name" placeholder="name">
+    <label for="weight">Enter weight</label>
+    <input type="number" name="weight" id="weight" placeholder="number">
+    <label for="weightUnit">Unit</label>
+    <select name="weightUnit" id="unit">
+        <option value="grams">g</option>
+        <option value="pounds">lbs</option>
+    </select> -->
+    <button>Submit</button>
+</form>
+
+<div><a href="/beds">All Beds</a></div>
+
+</body>
+</html>

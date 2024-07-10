@@ -1,0 +1,17 @@
+<%- include('../partials/headerHome') %>
+<body>
+    <h1><%= farmBed.bed.name %> bed products</h1>
+    <ul>
+
+        <div class="grid-col-3">
+         <% for(product of products) {%>
+             <div id="beds"><a id="bedAncor" href="/products/<%= product._id %>"><%= product.name %></a></div>
+             <% } %>
+         </div>
+     </ul>
+     <div><a href="/<%= farmBed._id %>/product/create">Create Product</a></div>
+     <div><a href="/beds/<%= farmBed._id %>"><%= farmBed.bed.name %> Bed Details</a></div>
+     <div><a href="/beds">All Beds</a></div> 
+
+</body>
+</html>
