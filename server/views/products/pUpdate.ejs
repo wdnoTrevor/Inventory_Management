@@ -6,7 +6,11 @@
 <form action="/products/<%= product._id %>?_method=PUT" method="POST">
     <input type="text" name="name" id="name" placeholder="name" value="<%= product.name %>">
     <input type="number" name="weight" id="weight" placeholder="item weight" value="<%= product.weight %>">
-
+    <!-- <input type="number" name="weight" id="weight" placeholder="update number" value="<%= product.weight %>"> -->
+    <select name="input" id="input">
+        <option value="add">add</option>
+        <option value="subtract">subtract</option>
+    </select>
     
     <!-- <label for="name">Enter Name</label>
     <input type="text " name="name" id="name" placeholder="name">

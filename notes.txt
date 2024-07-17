@@ -1,0 +1,8 @@
+when adding a product have a toggle of harvest & sell. harvest will add and sell will subtract weight
+
+
+bed layout - 3 small , 6 mid , 9 large , *12 xl* 
+add image url || color to bed&farm schema - change color or image of box
+add weight unit - lbs (transfer into grams)
+quicker routing - smoother menuevering through beds and products 
+quick product creation - quicker way to add and subtract products

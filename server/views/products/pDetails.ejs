@@ -5,7 +5,8 @@
     <h1><%= product.name %> details</h1>
     <ul>
         <li> The Product name is <%= product.name %></li>
-        <li>The weight is <%= product.weight %></li>  
+        <li><%= product.input %> <%= product.weight %> pounds </li>  
+        <li>total weight <%= product.totalWeight %></li>  
     </ul>
 <div><a href="/products/<%= product._id %>/update">Update <%= product.name %></a></div>
 <form action="/products/<%=product._id%>?_method=DELETE" method="POST">
@@ -13,6 +14,6 @@
 </form>
 <div><a href="/<%= farmBed[0]._id %>/products">All <%=farmBed[0].bed.name %> bed products</a></div>
 
-
+<h3>Havest/Sell</h3>
 </body>
 </html>

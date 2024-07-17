@@ -1,20 +1,15 @@
-// Function to transform incoming flat data to nested structure
-function transformBedData(data) {
-    return {
-        bed: {
-            name: data.bedName,
-            size: {
-                x: data.bedSizeX === '' ? null : Number(data.bedSizeX),
-                y: data.bedSizeY === '' ? null : Number(data.bedSizeY),
-            },
-            pos: {
-                hor: data.bedPosHor === '' ? null : Number(data.bedPosHor),
-                ver: data.bedPosVer === '' ? null : Number(data.bedPosVer),
-            }
-        }
-    };
+const _ = require('lodash');
+
+function NestObject(obj) {
+  const result = {};
+  Object.keys(obj).forEach(key => {
+    if (key.includes('.')) {
+      _.set(result, key, obj[key]);
+    } else {
+      result[key] = obj[key];
+    }
+  });
+  return result;
 }
-// Export the function
-module.exports = {
-    transformBedData
-};
+
+module.exports = NestObject;

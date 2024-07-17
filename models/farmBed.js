@@ -1,30 +1,15 @@
 // const { yellow } = require('color-name');
 const mongoose = require('mongoose');
+const { type } = require('os');
 // const { type } = require('os');
 
-// const fffStoreSchema = new mongoose.Schema ([
-//     {
-//         name: {
-//             type:String
-//         },
-//         weight:{
-//             type:Number,
-//             max:[25]
-//         },
-//         unit:{
-//             type: String,
-//             enum: ['grams', 'pounds']
-//         }
-//     }
 
-// ])
-const farmBedSchema = new mongoose.Schema ([
+const farmBedSchema = new mongoose.Schema (
     {
         bed: {
 
             name: {
                 type: String,
-                unique:true,
                 
             },
             size:{
@@ -43,13 +28,22 @@ const farmBedSchema = new mongoose.Schema ([
                 ver:{
                     type:Number
                 },
-            }
-            
-            
+            },
+            description:{
+                type: String
+            },
+            imageUrl: {
+                type: String, // URL to the image
+                required: false
+              },
+              colorCode: {
+                type: String, // Color code
+                required: false
+              }
         }
     }
 
-])
+)
 
 const FarmBed = new mongoose.model('FarmBed', farmBedSchema);
 module.exports = FarmBed;

@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 
-const ProductSchema = new mongoose.Schema ([
+const ProductSchema = new mongoose.Schema (
     {
       
         
@@ -9,18 +9,26 @@ const ProductSchema = new mongoose.Schema ([
                 type: String
             },
             weight:{
-                type: Number
+                type: Number,
+                default: 0
+            },
+            input:{
+                type: String,
+                enum:['add', 'subtract']
             },
             totalWeight:{
-                type: Number
+                type: Number,
+                default: 0
+
             }
         ,
-        author: { type: mongoose.Schema.Types.ObjectId, ref: 'FarmBed', required: true }
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'FarmBed', required: true },
+        
 
 
-    }
+    }, { timestamps: true } // This option adds createdAt and updatedAt fields
 
-])
+)
 
 const product = new mongoose.model('Product', ProductSchema);
 module.exports = product;

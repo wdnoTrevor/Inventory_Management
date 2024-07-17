@@ -11,15 +11,19 @@ const methodOverride = require('method-override');
 
 const FarmBed = require('../models/farmBed');
 const Product = require('../models/product');
-const {transformBedData} = require('../utils/dataTrans');
+const NestObject = require('../utils/dataTrans');
+const getTotalWeights  = require('../utils/aggregate'); // Import the aggregation function
+const { find } = require('lodash');
+
 
 
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname,'..','client', 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true })); // Middleware to parse form data
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
-app.use(bodyParser.urlencoded({ extended: true })); // Middleware to parse form data
 
 
 mongoose.connect('mongodb://localhost:27017/fff')
@@ -169,7 +173,7 @@ mongoose.connect('mongodb://localhost:27017/fff')
 
 app.get('/beds',  async (req,res) => {
 const farmBed = await FarmBed.find({})
-console.log(farmBed)
+// console.log(farmBed)
 res.render('beds/home', {farmBed});
 });
 
@@ -186,8 +190,8 @@ const {id} = req.params;
 const farmBed = await FarmBed.findById(id)
 // const products = await Product.find({name:{$eq:"pink Watermelon"},author:id})
 const products = await Product.find({author:id})
-console.log(farmBed);
-console.log(farmBed);
+// console.log(farmBed);
+// console.log(farmBed);
 
 // const product = new Product({item:{ name:'Black Watermelon'}, author: id});
 // await product.save();
@@ -204,9 +208,12 @@ res.render('beds/bUpdate', {farmBed});
 });
 
 app.get('/:id/products', async (req,res) => {
+
     const {id} = req.params;
     const farmBed = await FarmBed.findById(id);
     const products = await Product.find({ author:id }).populate('author');
+    const totals = await getTotalWeights();
+    console.log(totals);
 console.log(products)
 
     res.render('products/pHome',{products, farmBed});
@@ -218,8 +225,8 @@ app.get('/products/:id', async (req,res) => {
     const author = product.author;
     // console.log(author);
     const farmBed = await FarmBed.find(author);
-    console.log(farmBed[0].bed.name);
-// console.log(products)
+    // console.log(farmBed[0].bed.name);
+    // console.log(products)
 
     res.render('products/pDetails', {product, farmBed});
     });
@@ -233,22 +240,29 @@ app.get('/products/:id/update', async (req,res) => {
     });
     
 app.post('/beds', async (req,res) => {
-const incoming = req.body;
-const { bedName, bedSizeX, bedSizeY, bedPosHor, bedPosVer } = incoming;
-const incomingForm = transformBedData(incoming);
-console.log(bedName);
-//   const name = incoming['bed.name'];
+const data = NestObject(req.body);
+// const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+const {bed, name, size, x , y, pos, hor, ver, colorCode} = data;
+console.log(data.bed.name);
+console.log(data.bed.imageUrl);
+console.log(data.bed.colorCode);
+
+// const { bedName, bedSizeX, bedSizeY, bedPosHor, bedPosVer } = incoming;
+
+// const incomingForm = transformBedData(incoming);
+// console.log(bedName);
+// //   const name = incoming['bed.name'];
 
   try {
-    const existingBed = await FarmBed.findOne({ 'bed.name': bedName });
+    const existingBed = await FarmBed.findOne({ 'bed.name': name });
     
     if (!existingBed) {
-      const createBed = new FarmBed(incomingForm);
+      const createBed = new FarmBed(data);
       await createBed.save();
-      console.log('Bed created:', bedName);
+      console.log('Bed created:', data.bed.name);
       
     } else {
-      console.log('Bed with this name already exists:', bedName);
+      console.log('Bed with this name already exists:', data.bed.name);
       // Optionally, you can send a response indicating the duplicate
       return res.status(400).json({ message: 'Bed name must be unique' });
     }
@@ -262,15 +276,91 @@ console.log(bedName);
 })
 app.post('/:id/products', async (req,res) => {
     const {id} = req.params;
-    const incoming = req.body;
-
+    const data = req.body;
+    const {name,weight,input} = data;
+// console.log(data)
     // const incomingForm = transformBedData(incoming);
-    console.log(incoming)
-
+    // console.log(incoming.input)
     // console.log(itemName,itemWeight,author)
+    // if(incoming.input === 'add'){
+    //     console.log('added ')
+    // }else{
+    //     console.log('substract')
+    // }
+
+    let findProduct = await Product.findOne({ name: data.name }).sort({ createdAt: -1 }); // Sort by createdAt in descending order
+
+    // const findProduct = await Product.findOne({name: data.name})
+
+    if(findProduct){
+
+        const oldTotal = findProduct.totalWeight
+        const newWeight = data.weight
+        const total = Number(oldTotal) + Number(newWeight);
+        const totalSubWeight = Number(oldTotal) - Number(newWeight);
     
-    const product = new Product(incoming)
-    await product.save();
+        console.log("found" +  total)
+        // 
+        
+        
+        
+        
+        // Additional data to be merged function
+        function Input(addOrsub){
+            const additionalData = {
+            totalWeight: addOrsub // Initialize totalWeight to the value of weight
+                };
+                return additionalData;
+        }
+        // Input(total);
+        const inProduct = {
+            ...data,
+            ...Input(total)
+        };
+        const outProduct = {
+            ...data,
+            ...Input(totalSubWeight)
+        };
+        if(data.input === 'add'){
+            console.log('product add');
+            const product = new Product(inProduct)
+            await product.save()
+        }else{
+            console.log('product subtracted');
+            const product = new Product(outProduct)
+            await product.save()
+        }
+
+        // console.log("hwllloooo" + product)
+
+        // console.log("old" + oldTotal)
+        // console.log("new" + newWeight)
+        // // await product.save()
+        // // findProduct.totalWeight += Number(weight); // Update total weight
+        // // findProduct.weight = Number(weight); // Update current weight
+        // // await findProduct.save();
+    }else{
+        
+        const newWeight = data.weight
+        // Additional data to be merged
+        const additionalData = {
+        totalWeight: newWeight, // Initialize totalWeight to the value of weight
+        };
+        const productData = {
+            ...data,
+            ...additionalData
+
+        };
+        const product = new Product(productData)
+        await product.save();
+        // console.log("not found" +  total)
+
+    }
+    
+    // const product = new Product(data)
+
+
+    // await product.save();
     res.redirect(`/${id}/products`);
     });
 
@@ -281,7 +371,7 @@ const incoming = req.body
 
 console.log(id)
 const farmBed = await FarmBed.findById(id)
-const createProduct = await Product.insertMany([incoming]);
+const createProduct = await new Product (incoming);
 
 // console.log(incoming)
 res.redirect(`/beds/${farmBed._id}`);
@@ -291,7 +381,7 @@ app.get('/:id/product/create', async (req,res) => {
 const {id} = req.params;
 const farmBed = await FarmBed.findById(id)
 
-console.log(farmBed)
+// console.log(farmBed)
 const pCreateForm = req.body
 res.render('products/pCreate',{farmBed});
 })
@@ -305,10 +395,100 @@ res.redirect(`/beds/${createBed._id}`);
 })
 app.put('/products/:id', async (req,res) => {
 const {id} = req.params
-const incoming = req.body
-const createProduct = await Product.findByIdAndUpdate(id,incoming, {runValidators: true, new:true});
-console.log(createProduct)
-res.redirect(`/products/${createProduct._id}`);
+const data = req.body
+const {name,weight: newTotal,input} = data;
+
+const findOld = await Product.findById(id)
+const oldWeight = Number(findOld.weight)
+const newWeight  = Number(data.weight)
+const oldInput = findOld.input
+const newInput =  data.input
+const oldTotal = Number(findOld.totalWeight)
+let prevTotal = oldTotal - oldWeight;
+const oldDate = findOld.createdAt
+console.log("heheh" + findOld.createdAt)
+// Additional data to be merged function
+function Input(oldInput,newInput,oldWeight,newWeight,oldTotal){
+    if(oldInput === 'add'){
+        console.log(newInput);
+
+        let prevTotal = oldTotal - oldWeight;
+        if(newInput === 'add'){
+        console.log("heyyyy add");
+        const newTotal = prevTotal + newWeight
+            const additionalData = {
+                totalWeight: newTotal  // Initialize totalWeight to the value of weight
+                };
+                TotalWeightUpdate(newTotal, oldTotal)
+                return additionalData; 
+        }else{
+        const newTotal = prevTotal - newWeight
+
+            const additionalData = {
+                totalWeight: newTotal  // Initialize totalWeight to the value of weight
+                };  
+                TotalWeightUpdate(newTotal, oldTotal)
+                return additionalData; 
+        }
+    }
+    else if(oldInput === 'subtract'){
+
+        let prevTotal = oldTotal + oldWeight;
+        const newTotal = prevTotal - newWeight
+        if(newInput === 'subtract'){
+            const additionalData = {
+                totalWeight: newTotal  // Initialize totalWeight to the value of weight
+                };  
+                TotalWeightUpdate(newTotal, oldTotal)
+                return additionalData; 
+        }else{
+            const newTotal = prevTotal + newWeight
+            const additionalData = {
+                totalWeight: newTotal // Initialize totalWeight to the value of weight
+                };  
+                TotalWeightUpdate(newTotal, oldTotal)
+                return additionalData; 
+        }
+    }
+
+}
+// Input(oldInput,newInput,oldWeight,newWeight,oldTotal);
+
+
+// Input(oldInput,newInput,oldWeight,newWeight,oldTotal);
+const merged = {
+    ...data,
+    ...Input(oldInput,newInput,oldWeight,newWeight,oldTotal)
+};
+
+const updateProduct = await Product.findByIdAndUpdate(id,merged, {runValidators: true, new:true});
+      // Update all products with the specified name and created after the comparison date,
+    // but exclude the product with the specified _id
+    async function TotalWeightUpdate(newTotal, oldTotal){
+        function past(newTotal,oldTotal){
+            if(oldTotal >=  newTotal ){ // you subtracted from the total
+                const changeBy = newTotal - oldTotal;
+                console.log(changeBy + "prev>=")
+                return changeBy;
+            }else{
+                const changeBy = newTotal - oldTotal;
+                console.log(changeBy + "prev")
+
+                return changeBy;
+            }
+        }
+        const updateResult = await Product.updateMany(
+            { 
+              name: findOld.name,
+              createdAt: { $gte: oldDate },
+              _id: { $ne: id } // Exclude the product with this _id
+            },
+            { $inc: { totalWeight: past(newTotal,oldTotal), runValidators: true, new:true  } }
+          );
+          console.log(updateResult)
+    }
+
+res.redirect(`/products/${id}`);
 })
 app.delete('/beds/:id', async (req, res) => {
     const { id } = req.params;

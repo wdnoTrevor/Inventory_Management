@@ -6,6 +6,10 @@
 <form action="/<%=farmBed._id%>/products" method="POST">
     <input type="text" name="name" id="name" placeholder="name">
     <input type="number" name="weight" id="weight" placeholder="item weight">
+    <select name="input" id="input">
+        <option value="add">add</option>
+        <option value="subtract">subtract</option>
+    </select>
    <input type="text" name="author" id="author" value="<%=farmBed._id%>">
     
     <!-- <label for="name">Enter Name</label>

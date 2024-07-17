@@ -1,27 +1,41 @@
 <%- include('../partials/headerHome') %>
 
 <body>
-    <h1>Create Beds</h1>
-
-<form action="/beds" method="POST">
-    <input type="text" name="bedName" id="bedName" placeholder="bed name">
-    <input type="number" name="bedSizeX" id="bedSizeX" placeholder=" length of x">
-    <input type="number" name="bedSizeY" id="bedSizeY" placeholder=" length of y">
-    <input type="number" name="bedPosHor" id="bedPosHor" placeholder=" horizontal position">
-    <input type="number" name="bedPosVer" id="bedPosVer" placeholder=" vertical position">
-
-    
-    <!-- <label for="name">Enter Name</label>
-    <input type="text " name="name" id="name" placeholder="name">
-    <label for="weight">Enter weight</label>
-    <input type="number" name="weight" id="weight" placeholder="number">
-    <label for="weightUnit">Unit</label>
-    <select name="weightUnit" id="unit">
-        <option value="grams">g</option>
-        <option value="pounds">lbs</option>
-    </select> -->
-    <button>Submit</button>
-</form>
+    <div class="container mt-5">
+      <h2>Create a New Bed</h2>
+      <form action="/beds" method="POST">
+        <div class="form-group">
+          <label for="bed.name">Bed Name</label>
+          <input type="text" class="form-control" name="bed.name" id="bed.name" placeholder="Bed Name">
+        </div>
+        <div class="form-group">
+          <label for="bed.size.x">Length of X</label>
+          <input type="number" class="form-control" name="bed.size.x" id="bed.size.x" placeholder="Length of X">
+        </div>
+        <div class="form-group">
+          <label for="bed.size.y">Length of Y</label>
+          <input type="number" class="form-control" name="bed.size.y" id="bed.size.y" placeholder="Length of Y">
+        </div>
+        <div class="form-group">
+          <label for="bed.pos.hor">Horizontal Position</label>
+          <input type="number" class="form-control" name="bed.pos.hor" id="bed.pos.hor" placeholder="Horizontal Position">
+        </div>
+        <div class="form-group">
+          <label for="bed.pos.ver">Vertical Position</label>
+          <input type="number" class="form-control" name="bed.pos.ver" id="bed.pos.ver" placeholder="Vertical Position">
+        </div>
+        <div class="form-group">
+          <label for="bed.imageUrl">Bed Image URL</label>
+          <input type="text" class="form-control" name="bed.imageUrl" id="bed.imageUrl" placeholder="Bed Image URL">
+        </div>
+        <div class="form-group">
+          <label for="bed.colorCode">Background Color</label>
+          <input type="text" class="form-control" name="bed.colorCode" id="bed.colorCode" placeholder="Background Color">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  
 <a href="/beds">All Beds</a>
 </body>
 </html>
