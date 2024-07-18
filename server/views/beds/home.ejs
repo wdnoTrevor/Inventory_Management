@@ -1,5 +1,5 @@
 <%- include('../partials/headerHome') %>
-
+<!--  -->
 <body class="roboto-regular">
     <nav class="navbar navbar-expand-lg bg-body-tertiary ">
         <div class="container-fluid">
@@ -11,14 +11,31 @@
             </ul>
         </div>
       </nav>
-    <div class="container-fluid text-center">
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6">
-          <% for(bed of farmBed) { %>
-            <a class="col bg-success text-white" id="bedAncor" href="/beds/<%= bed._id %>"><%= bed.bed.name %></a>
-          <% } %>
-          <a class="col bg-success text-white" id="bedAncor" href="/beds/create">Create Bed</a>
-        </div>
+  <!-- Grid with Images -->
+  <!-- Grid with Images -->
+  <div class="container-fluid text-center">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 color roboto-bold">
+      <% for (let bed of farmBed) { %>
+        <% if (bed.bed.imageUrl && bed.bed.imageUrl !== '') { %>
+          <div class="col grid-item" style="background-image: url('<%= bed.bed.imageUrl %>');">
+            <a id="bedAncor" href="/beds/<%= bed._id %>" class="text"><%= bed.bed.name %></a>
+          </div>
+        <% } else if (bed.bed.colorCode && bed.bed.colorCode !== '') { %>
+          <div class="col grid-item" style="background-color: <%= bed.bed.colorCode %>;">
+            <a id="bedAncor" href="/beds/<%= bed._id %>" class="text"><%= bed.bed.name %></a>
+          </div>
+        <% } else { %>
+          <div class="col grid-item bg-success">
+            <a id="bedAncor" href="/beds/<%= bed._id %>" class="text"><%= bed.bed.name %></a>
+          </div>
+        <% } %>
+      <% } %>
+      <div class="col grid-item bg-success">
+        <a id="bedAncor" href="/beds/create" class="text">Create Bed</a>
+      </div>
     </div>
+  </div>
+  
     <!-- <main>
         
     </main>

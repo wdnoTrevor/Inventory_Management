@@ -243,9 +243,9 @@ app.post('/beds', async (req,res) => {
 const data = NestObject(req.body);
 // const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 const {bed, name, size, x , y, pos, hor, ver, colorCode} = data;
-console.log(data.bed.name);
-console.log(data.bed.imageUrl);
-console.log(data.bed.colorCode);
+// console.log(data.bed.name);
+// console.log(data.bed.imageUrl);
+// console.log(data.bed.colorCode);
 
 // const { bedName, bedSizeX, bedSizeY, bedPosHor, bedPosVer } = incoming;
 

@@ -36,7 +36,7 @@ const farmBedSchema = new mongoose.Schema (
                 type: String, // URL to the image
                 required: false
               },
-              colorCode: {
+            colorCode: {
                 type: String, // Color code
                 required: false
               }

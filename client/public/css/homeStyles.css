@@ -1,3 +1,70 @@
+:root {
+
+  }
+    /* Box sizing rules */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    .button {
+      font-weight: var(--fw-xs);
+    }
+    /* Prevent font size inflation */
+    html {
+      -moz-text-size-adjust: none;
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
+    }
+    
+    /* Remove default margin in favour of better control in authored CSS */
+    * {
+      margin: 0;
+      padding: 0;
+      font: inherit; /* resets fonts sizes. forces you to use proper classes instead of using h3 to style something  */
+    }
+    
+    /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+    ul[role="list"],
+    ol[role="list"] {
+      list-style: none;
+    }
+    /* set coor root defaults */
+    html:focus-within {
+      scroll-behavior: smooth;
+    }
+    
+    /* when you need to use the bodies height  */
+    html,
+    body {
+      height: 100vh;
+      /* width: 100vw; */
+    }
+    /* Set core body defaults */
+    
+    body {
+      text-rendering: optimizeSpeed;
+      /* display: grid;
+      justify-content: center; */
+      /* line-height: 1.5;
+      font-family: var(--ff-body);
+      font-size: var(--fw-xl); */
+    }
+    
+    /* A elements that don't have a class get default styles */
+    a:not([class]) {
+      text-decoration-skip-ink: auto;
+    }
+    
+    /* Make images easier to work with */
+    img,
+    picture,
+    svg {
+      max-width: 100%;
+      display: block;
+    }
+  
+
 html{
     overflow-x: hidden;
 }
@@ -20,7 +87,7 @@ body{
     display: grid;
     width: 100px;
     height: 100px;
-    background-color: whitesmoke;
+    background-color: rgb(245, 245, 245);
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     justify-items: center; /* Ensure grid items are centered */
@@ -37,6 +104,7 @@ body{
     align-items: center;
     justify-content: center;
     
+    
 }
 
 .roboto-thin {
@@ -46,6 +114,39 @@ body{
   }
   .roboto-regular {
     font-family: "Roboto", sans-serif;
-    font-weight: 300;
+    font-weight: 700;
     font-style: normal;
+    
   }
+  .roboto-bold {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: xx-large;
+  }
+  .grid-item {
+    height: auto; /* Set your desired height */
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+  }
+  .grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures the image fits within the container */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  .color{
+color: rgb(255, 255, 255);
+ }
+
+/* .text{
+    border-color: black;
+    border-width: 10px; 
+} */
