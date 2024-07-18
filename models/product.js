@@ -21,6 +21,10 @@ const ProductSchema = new mongoose.Schema (
                 default: 0
 
             },
+            description:{
+                type: String
+            },
+
             imageUrl: {
                 type: String, // URL to the image
                 required: false
