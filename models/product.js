@@ -20,7 +20,15 @@ const ProductSchema = new mongoose.Schema (
                 type: Number,
                 default: 0
 
-            }
+            },
+            imageUrl: {
+                type: String, // URL to the image
+                required: false
+              },
+            colorCode: {
+                type: String, // Color code
+                required: false
+              }
         ,
         author: { type: mongoose.Schema.Types.ObjectId, ref: 'FarmBed', required: true },
         

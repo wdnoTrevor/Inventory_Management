@@ -1,17 +1,42 @@
 <%- include('../partials/headerHome') %>
 <body>
-    <h1><%= farmBed.bed.name %> bed products</h1>
-    <ul>
-
-        <div class="grid-col-3">
-         <% for(product of products) {%>
-             <div id="beds"><a id="bedAncor" href="/products/<%= product._id %>"><%= product.name %></a></div>
-             <% } %>
-         </div>
-     </ul>
-     <div><a href="/<%= farmBed._id %>/product/create">Create Product</a></div>
-     <div><a href="/beds/<%= farmBed._id %>"><%= farmBed.bed.name %> Bed Details</a></div>
-     <div><a href="/beds">All Beds</a></div> 
+    <div class="container">
+        <h1 class="mb-4"><%= farmBed.bed.name %> Bed Products</h1>
+        <!-- Grid with Images -->
+        <div class="container-fluid text-center">
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 color roboto-bold">
+            <% for (let product of products) { %>
+              <% if (product.imageUrl && product.imageUrl !== '') { %>
+                <div class="col grid-item" style="background-image: url('<%= product.imageUrl %>');">
+                  <a id="productAncor" href="/products/<%= product._id %>" class="text"><%= product.name %></a>
+                </div>
+              <% } else if (product.colorCode && product.colorCode !== '') { %>
+                <div class="col grid-item" style="background-color: <%= product.colorCode %>;">
+                  <a id="productAncor" href="/products/<%= product._id %>" class="text"><%= product.name %></a>
+                </div>
+              <% } else { %>
+                <div class="col grid-item bg-success">
+                  <a id="productAncor" href="/products/<%= product._id %>" class="text"><%= product.name %></a>
+                </div>
+              <% } %>
+            <% } %>
+            <div class="col grid-item bg-success">
+              <a id="productAncor" href="/<%= farmBed._id %>/product/create" class="text">Create Product</a>
+            </div>
+          </div>
+        </div>
+    
+        <div class="mt-4">
+          <a href="/<%= farmBed._id %>/product/create" class="btn btn-primary">Create Product</a>
+          <a href="/beds/<%= farmBed._id %>" class="btn btn-secondary"><%= farmBed.bed.name %> Bed Details</a>
+          <a href="/beds" class="btn btn-info">All Beds</a>
+        </div>
+      </div>
+    
+      <!-- Bootstrap JS, Popper.js, and jQuery -->
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 </body>
 </html>

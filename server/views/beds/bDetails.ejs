@@ -1,37 +1,49 @@
 <%- include('../partials/headerHome') %>
 
 <body class="roboto-regular">
-    <h1> <%= farmBed.bed.name %> Bed Details</h1>
-    <ul>
-            <li>bed name is  <%= farmBed.bed.name %></li>           
-            <li>bed size X is  <%= farmBed.bed.size.x %></li>           
-            <li>bed size Y is  <%= farmBed.bed.size.y %></li>           
-            <li>bed horizontal position is  <%= farmBed.bed.pos.hor %></li>           
-            <li>bed vertical position is  <%= farmBed.bed.pos.ver %></li> 
-            <li>Image Url is  <%= farmBed.bed.imageUrl %></li> 
-            <li>Image Color is  <%= farmBed.bed.colorCode %></li> 
 
-            
-    </ul>
-    <a href="/beds/<%= farmBed._id %>/update">Update Bed</a>
-    <div><a href="/beds">All Beds</a></div>
-    <form action="/beds/<%=farmBed._id%>?_method=DELETE" method="POST">
-        <button>Delete Bed</button>
-    </form>
-
-
-    <a href="/<%= farmBed._id %>/product/create">Create Product</a>
-    <a href="/<%= farmBed._id %>/products">All Products</a>
-    
-    <!-- <ul>
-
-        <div class="grid-col-3">
-         <% for(product of products) {%>
-             <div id="beds"><a id="bedAncor" href=""><%= product.name %></a></div>
-             <% } %>
-         </div>
-     </ul> -->
-
-
-</body>
+    <%- include('../partials/headerHome') %>
+  
+    <div class="container">
+      <h1 class="mb-4"><%= farmBed.bed.name %> Bed Details</h1>
+      
+      <ul class="bed-details">
+        <li><span>Bed name:</span> <%= farmBed.bed.name %></li>
+        <li><span>Bed size X:</span> <%= farmBed.bed.size.x %></li>
+        <li><span>Bed size Y:</span> <%= farmBed.bed.size.y %></li>
+        <li><span>Bed horizontal position:</span> <%= farmBed.bed.pos.hor %></li>
+        <li><span>Bed vertical position:</span> <%= farmBed.bed.pos.ver %></li>
+        <li><span>Image URL:</span> <%= farmBed.bed.imageUrl %></li>
+        <li><span>Image color:</span> <%= farmBed.bed.colorCode %></li>
+      </ul>
+  
+      <div class="actions my-4">
+        <a href="/beds/<%= farmBed._id %>/update" class="btn btn-primary">Update Bed</a>
+        <a href="/beds" class="btn btn-secondary">All Beds</a>
+        <form action="/beds/<%= farmBed._id %>?_method=DELETE" method="POST" class="d-inline">
+          <button class="btn btn-danger">Delete Bed</button>
+        </form>
+      </div>
+  
+      <div class="actions mb-4">
+        <a href="/<%= farmBed._id %>/product/create" class="btn btn-success">Create Product</a>
+        <a href="/<%= farmBed._id %>/products" class="btn btn-info">All Products</a>
+      </div>
+  
+      <!-- Uncomment and style this section when you want to list products
+      <ul class="list-group">
+        <% for(product of products) { %>
+          <li class="list-group-item">
+            <a href="#"><%= product.name %></a>
+          </li>
+        <% } %>
+      </ul>
+      -->
+    </div>
+  
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
 </html>

@@ -1,26 +1,49 @@
 <%- include('../partials/headerHome') %>
 
 <body>
-    <h1>Update <%= farmBed.name %></h1>
 
-<form action="/beds/<%= farmBed._id %>?_method=PUT" method="POST">
-    <input type="text" name="bed.name" id="bed.name" placeholder="<%= farmBed.bed.name %>" value="<%= farmBed.bed.name %>">
-    <input type="number" name="bed.size.x" id="bed.size.x" placeholder="<%= farmBed.bed.size.x %>" value="<%= farmBed.bed.size.x %>">
-    <input type="number" name="bed.size.y" id="bed.size.y" placeholder="<%= farmBed.bed.size.y %>" value="<%= farmBed.bed.size.y %>">
-    <input type="number" name="bed.pos.hor" id="bed.pos.hor" placeholder="<%= farmBed.bed.pos.hor %>" value="<%= farmBed.bed.pos.hor %>">
-    <input type="number" name="bed.pos.ver" id="bed.pos.ver" placeholder="<%= farmBed.bed.pos.ver %>" value="<%= farmBed.bed.pos.ver %>">
-
-    <!-- <label for="name">Change Name</label>
-    <input type="text " name="name" id="name" placeholder="<%= farmBed.name %>" value="<%= farmBed.name %>">
-    <label for="weight">Change weight</label>
-    <input type="number" name="weight" id="weight" placeholder="<%= farmBed.weight %>" value="<%= farmBed.weight %>">
-    <label for="weightUnit">Change Unit</label>
-    <select name="weightUnit" id="unit">
-        <option value="pounds">lbs</option>
-        <option value="grams">g</option>
-    </select> -->
-    <button>Submit</button>
-</form>
-<a href="/beds">All Beds</a>
-</body>
+    <%- include('../partials/headerHome') %>
+  
+    <div class="container">
+      <h1 class="mb-4">Update <%= farmBed.bed.name %></h1>
+  
+      <form action="/beds/<%= farmBed._id %>?_method=PUT" method="POST">
+        <div class="form-group">
+          <label for="bed.name">Bed Name</label>
+          <input type="text" class="form-control" name="bed.name" id="bed.name" placeholder="Bed Name" value="<%= farmBed.bed.name %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.size.x">Bed Size X</label>
+          <input type="number" class="form-control" name="bed.size.x" id="bed.size.x" placeholder="Bed Size X" value="<%= farmBed.bed.size.x %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.size.y">Bed Size Y</label>
+          <input type="number" class="form-control" name="bed.size.y" id="bed.size.y" placeholder="Bed Size Y" value="<%= farmBed.bed.size.y %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.pos.hor">Bed Horizontal Position</label>
+          <input type="number" class="form-control" name="bed.pos.hor" id="bed.pos.hor" placeholder="Bed Horizontal Position" value="<%= farmBed.bed.pos.hor %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.pos.ver">Bed Vertical Position</label>
+          <input type="number" class="form-control" name="bed.pos.ver" id="bed.pos.ver" placeholder="Bed Vertical Position" value="<%= farmBed.bed.pos.ver %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.imageUrl">Image URL</label>
+          <input type="text" class="form-control" name="bed.imageUrl" id="bed.imageUrl" placeholder="Image URL" value="<%= farmBed.bed.imageUrl %>">
+        </div>
+        <div class="form-group">
+          <label for="bed.colorCode">Color Code</label>
+          <input type="text" class="form-control" name="bed.colorCode" id="bed.colorCode" placeholder="Color Code" value="<%= farmBed.bed.colorCode %>">
+        </div>
+        <button type="submit" class="btn btn-primary form-submit">Submit</button>
+      </form>
+      <a href="/beds" class="btn btn-secondary mt-3">All Beds</a>
+    </div>
+  
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
 </html>

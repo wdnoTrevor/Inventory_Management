@@ -2,18 +2,35 @@
 
  
 <body>
-    <h1><%= product.name %> details</h1>
-    <ul>
-        <li> The Product name is <%= product.name %></li>
-        <li><%= product.input %> <%= product.weight %> pounds </li>  
-        <li>total weight <%= product.totalWeight %></li>  
-    </ul>
-<div><a href="/products/<%= product._id %>/update">Update <%= product.name %></a></div>
-<form action="/products/<%=product._id%>?_method=DELETE" method="POST">
-    <button>Delete Product</button>
-</form>
-<div><a href="/<%= farmBed[0]._id %>/products">All <%=farmBed[0].bed.name %> bed products</a></div>
 
-<h3>Havest/Sell</h3>
+    <div class="container">
+        <h1 class="mb-4"><%= product.name %> Details</h1>
+        
+        <ul class="product-details">
+          <li><span>Product Name:</span> <%= product.name %></li>
+          <li><span>Action:</span> <%= product.input %> <%= product.weight %> pounds</li>
+          <li><span>Total Weight:</span> <%= product.totalWeight %></li>
+          <li><span>Image URL:</span> <%= product.imageUrl %></li>
+          <li><span>Hex Color Code:</span> <%= product.colorCode %></li>
+        </ul>
+    
+        <div class="actions my-4">
+          <a href="/products/<%= product._id %>/update" class="btn btn-primary">Update <%= product.name %></a>
+          <form action="/products/<%= product._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button class="btn btn-danger">Delete Product</button>
+          </form>
+        </div>
+    
+        <div class="mt-4">
+          <a href="/<%= farmBed[0]._id %>/products" class="btn btn-info">All <%= farmBed[0].bed.name %> Bed Products</a>
+        </div>
+    
+        <h3>Harvest/Sell</h3>
+      </div>
+    
+      <!-- Bootstrap JS, Popper.js, and jQuery -->
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

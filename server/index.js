@@ -380,6 +380,7 @@ res.redirect(`/beds/${farmBed._id}`);
 app.get('/:id/product/create', async (req,res) => {
 const {id} = req.params;
 const farmBed = await FarmBed.findById(id)
+console.log(farmBed.author)
 
 // console.log(farmBed)
 const pCreateForm = req.body

@@ -1,31 +1,48 @@
 <%- include('../partials/headerHome') %>
 
 <body>
-    <h1> Create Products for the <%= farmBed.bed.name %></h1>
-
-<form action="/<%=farmBed._id%>/products" method="POST">
-    <input type="text" name="name" id="name" placeholder="name">
-    <input type="number" name="weight" id="weight" placeholder="item weight">
-    <select name="input" id="input">
-        <option value="add">add</option>
-        <option value="subtract">subtract</option>
-    </select>
-   <input type="text" name="author" id="author" value="<%=farmBed._id%>">
+    <div class="container">
+        <h1 class="mb-4">Create Products for the <%= farmBed.bed.name %></h1>
     
-    <!-- <label for="name">Enter Name</label>
-    <input type="text " name="name" id="name" placeholder="name">
-    <label for="weight">Enter weight</label>
-    <input type="number" name="weight" id="weight" placeholder="number">
-    <label for="weightUnit">Unit</label>
-    <select name="weightUnit" id="unit">
-        <option value="grams">g</option>
-        <option value="pounds">lbs</option>
-    </select> -->
-    <button>Submit</button>
-</form>
-
-<div><a href="/beds">All Beds</a></div>
-
-<div><a href="/<%= farmBed._id %>/products">All products</a></div>
+        <form action="/<%= farmBed._id %>/products" method="POST">
+          <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="Product Name">
+          </div>
+          <div class="form-group">
+            <label for="weight">Product Weight</label>
+            <input type="number" class="form-control" name="weight" id="weight" placeholder="Product Weight">
+          </div>
+          <div class="form-group">
+            <label for="input">Action</label>
+            <select class="form-control" name="input" id="input">
+              <option value="add">Add</option>
+              <option value="subtract">Subtract</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="imageUrl">Image URL</label>
+            <input type="text" class="form-control" name="imageUrl" id="imageUrl" placeholder="Image URL">
+          </div>
+          <div class="form-group">
+            <label for="colorCode">Color Code</label>
+            <input type="text" class="form-control" name="colorCode" id="colorCode" placeholder="Hex Color Code">
+          </div>
+          <input type="hidden" name="author" id="author" value="<%= farmBed._id %>">
+          
+          <button type="submit" class="btn btn-primary form-submit">Submit</button>
+        </form>
+    
+        <div class="mt-4">
+          <a href="/beds" class="btn btn-secondary">All Beds</a>
+          <a href="/<%= farmBed._id %>/products" class="btn btn-info">All Products</a>
+          <a href="/beds/<%= farmBed._id %>" class="btn btn-light"><%= farmBed.bed.name %></a>
+        </div>
+      </div>
+    
+      <!-- Bootstrap JS, Popper.js, and jQuery -->
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

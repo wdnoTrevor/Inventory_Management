@@ -106,6 +106,18 @@ body{
     
     
 }
+#productAncor {
+    place-self: center;
+    text-align: center;
+    height: 30.36vh;
+    color: inherit; /* Change this to any desired color */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+}
 
 .roboto-thin {
     font-family: "Roboto", sans-serif;
