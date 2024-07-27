@@ -498,15 +498,59 @@ app.delete('/beds/:id', async (req, res) => {
 })
 app.delete('/products/:id', async (req, res) => {
     const { id } = req.params;
+
+    // Find the product to be deleted
     const findProduct = await Product.findById(id);
-    const pLink = findProduct.author
-    console.log(pLink)
-    const farmBed = await FarmBed.find(pLink);
-    console.log(farmBed);
+    if (!findProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const pLink = findProduct.author;
+    console.log(pLink);
+    const farmBed = await FarmBed.findById(pLink);
+    if (!farmBed) {
+        return res.status(404).json({ message: 'FarmBed not found' });
+    }
+
+    const oldWeight = Number(findProduct.weight);
+    const oldInput = findProduct.input;
+    const oldTotal = Number(findProduct.totalWeight);
+    const oldDate = findProduct.createdAt;
+
+    // Function to calculate the new total weight
+    function calculateNewTotalWeight(oldInput, oldWeight, oldTotal) {
+        if (oldInput === 'add') {
+            return oldTotal - oldWeight;
+        } else if (oldInput === 'subtract') {
+            return oldTotal + oldWeight;
+        }
+    }
+
+    const newTotal = calculateNewTotalWeight(oldInput, oldWeight, oldTotal);
+
+    // Function to update the total weight of all future products with the same name
+    async function updateFutureProducts(newTotal, oldTotal) {
+        const changeBy = newTotal - oldTotal;
+        const updateResult = await Product.updateMany(
+            {
+                name: findProduct.name,
+                createdAt: { $gte: oldDate },
+                _id: { $ne: id } // Exclude the product to be deleted
+            },
+            { $inc: { totalWeight: changeBy } }
+        );
+        console.log(updateResult);
+    }
+
+    // Update future products
+    await updateFutureProducts(newTotal, oldTotal);
+
+    // Delete the product
     const deletedProduct = await Product.findByIdAndDelete(id);
 
-    res.redirect(`/${farmBed[0]._id}/products`);
-})
+    res.redirect(`/${farmBed._id}/products`);
+});
+
 
 
 
