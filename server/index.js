@@ -189,8 +189,20 @@ app.get('/beds/:id', async (req,res) => {
 const {id} = req.params;
 const farmBed = await FarmBed.findById(id)
 // const products = await Product.find({name:{$eq:"pink Watermelon"},author:id})
-const products = await Product.find({author:id})
-// console.log(farmBed);
+// const products = await Product.find({author:id})
+    // Aggregation pipeline to get the most recent product for each name
+    const products = await Product.aggregate([
+        { $match: { author: farmBed._id } }, // Match products related to the bed
+        { $sort: { createdAt: -1 } }, // Sort products by creation date (most recent first)
+        {
+            $group: {
+                _id: "$name", // Group by product name
+                doc: { $first: "$$ROOT" } // Take the first document in each group (most recent)
+            }
+        },
+        { $replaceRoot: { newRoot: "$doc" } } // Replace root with the most recent document
+    ]);
+console.log(products);
 // console.log(farmBed);
 
 // const product = new Product({item:{ name:'Black Watermelon'}, author: id});
