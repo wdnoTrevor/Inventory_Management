@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Grid</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #formContainer {
+            padding: 10px;
+            background-color: #f0f0f0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #gridContainer {
+            display: grid;
+            gap: 0;
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 50px); /* Adjust according to form height */
+            box-sizing: border-box;
+        }
+        .grid-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(48, 104, 16);
+            border: 1px solid #000; /* Thin border for visibility */
+            box-sizing: border-box; /* Ensure border is included in size */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+        .clicked {
+            background-color: rgb(104, 48, 16); /* Change color when clicked */
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer">
+        <form id="gridForm">
+            <label for="xAxis">Number of boxes on x-axis:</label>
+            <input type="number" id="xAxis" name="xAxis" min="1" required>
+            <label for="yAxis">Number of boxes on y-axis:</label>
+            <input type="number" id="yAxis" name="yAxis" min="1" required>
+            <button type="submit">Generate Grid</button>
+        </form>
+    </div>
+    <div id="gridContainer"></div>
+
+    <script>
+        let clickedBoxes = [];
+
+        document.getElementById('gridForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const xAxis = parseInt(document.getElementById('xAxis').value);
+            const yAxis = parseInt(document.getElementById('yAxis').value);
+            generateGrid(xAxis, yAxis);
+        });
+
+        function generateGrid(x, y) {
+            const gridContainer = document.getElementById('gridContainer');
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${x}, 1fr)`;
+            gridContainer.style.gridTemplateRows = `repeat(${y}, 1fr)`;
+            clickedBoxes = []; // Reset the clicked boxes list
+
+            for (let i = 0; i < x * y; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                const xCoordinate = i % x;
+                const yCoordinate = Math.floor(i / x);
+                gridItem.dataset.coordinates = `${xCoordinate},${yCoordinate}`;
+                gridItem.addEventListener('click', function() {
+                    const index = clickedBoxes.indexOf(gridItem.dataset.coordinates);
+                    if (index === -1) {
+                        gridItem.classList.add('clicked');
+                        clickedBoxes.push(gridItem.dataset.coordinates);
+                    } else {
+                        gridItem.classList.remove('clicked');
+                        clickedBoxes.splice(index, 1);
+                    }
+                    console.log(clickedBoxes);
+                });
+                gridContainer.appendChild(gridItem);
+            }
+        }
+    </script>
+</body>
+</html>

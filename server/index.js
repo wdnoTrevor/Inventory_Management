@@ -171,6 +171,11 @@ mongoose.connect('mongodb://localhost:27017/fff')
 //     console.log("error big dawg")
 // }) 
 
+
+app.get('/farm',  async (req,res) => {
+
+res.render('farm/farmGenerator');
+});
 app.get('/beds',  async (req,res) => {
 const farmBed = await FarmBed.find({})
 // console.log(farmBed)
@@ -234,19 +239,22 @@ console.log(products)
 app.get('/products/:id', async (req,res) => {
     const {id} = req.params;
     const product = await Product.findById(id);
+    
     const author = product.author;
+    const products = await Product.find({ author:author }).populate('author');
+
     // console.log(author);
     const farmBed = await FarmBed.find(author);
     // console.log(farmBed[0].bed.name);
     // console.log(products)
 
-    res.render('products/pDetails', {product, farmBed});
+    res.render('products/pDetails', {product, farmBed, products});
     });
     
 app.get('/products/:id/update', async (req,res) => {
     const {id} = req.params;
     const product = await Product.findById(id);
-// console.log(products)
+    // console.log(products)
 
     res.render('products/pUpdate', {product});
     });
