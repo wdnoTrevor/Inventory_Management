@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Grid with Color Picker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #formContainer {
+            padding: 10px;
+            background-color: #f0f0f0;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Ensure wrapping for smaller screens */
+        }
+        #gridContainerWrapper {
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 100px); /* Adjust according to form height */
+            position: relative; /* To allow positioning of background image */
+            display: flex;
+        }
+        #backgroundImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure image covers the entire container */
+            opacity: 0.9; /* Adjust opacity for visibility */
+            pointer-events: none; /* Ensure image doesn't capture mouse events */
+            z-index: 1; /* Ensure the background image is behind the grid */
+        }
+        #gridContainer {
+            display: grid;
+            gap: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            z-index: 2; /* Ensure the grid is on top of the background image */
+        }
+        .grid-item, .inner-grid-item {
+            display: grid;
+            place-items: center; /* Center content */
+            background-color: rgba(48, 104, 16, 0.7); /* Add opacity to background color */
+            border: 0.5px solid transparent; /* Use transparent border */
+            box-shadow: 0 0 0 0.1px #000; /* Simulate fine border with box shadow */
+            box-sizing: border-box; /* Ensure border is included in size */
+            cursor: pointer; /* Change cursor to pointer */
+            width: 100%;
+            height: 100%;
+        }
+        .selected {
+            background-color: rgba(255, 255, 51, 0.7); /* Neon yellow color with opacity for selected boxes */
+        }
+        .inner-grid-container {
+            display: grid;
+            gap: 0;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            z-index: 2; /* Ensure inner grids are on top */
+        }
+        #colorInfo {
+            display: none;
+            margin-left: 10px;
+        }
+        option {
+            color: #fff;
+            font-weight: bold;
+        }
+        form label {
+            margin-right: 10px;
+        }
+        form input[type="number"],
+        form input[type="text"] {
+            width: 50px; /* Adjusted width for smaller inputs */
+            margin-right: 10px;
+        }
+        form input[type="text"] {
+            width: 100px; /* Adjusted width for name input */
+        }
+        form button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer">
+        <form id="gridForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="xAxis">X:</label>
+            <input type="number" id="xAxis" name="xAxis" min="1" required>
+            <label for="yAxis">Y:</label>
+            <input type="number" id="yAxis" name="yAxis" min="1" required>
+            <label for="backgroundImageUrl">Background Image URL:</label>
+            <input type="text" id="backgroundImageUrl" name="backgroundImageUrl" required>
+            <button type="submit">Generate Grid</button>
+        </form>
+        <button id="makeBoxesButton">Make boxes</button>
+        <input type="color" id="colorPicker" style="display:none;">
+        <select id="colorInfo" style="display:none;" onchange="selectSavedColor(this)"></select>
+        <button id="updateBoxesButton" disabled>Update boxes</button>
+        <button id="submitBoxesButton">Submit boxes</button>
+        <textarea id="jsonInput" placeholder="Paste JSON data here"></textarea>
+        <button id="loadJsonButton">Load JSON</button>
+    </div>
+    <div id="gridContainerWrapper">
+        <img id="backgroundImage" src="" alt="Background">
+        <div id="gridContainer"></div>
+    </div>
+
+    <script>
+        let makeBoxesMode = false;
+        let selectedColor = "#000000";
+        const clickedBoxes = {};
+        let selectedBoxes = new Set();
+        let updatedBoxes = {}; // To store the original points of updated boxes
+        let backgroundImageUrl = '';
+
+        document.getElementById('gridForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const xAxis = parseInt(document.getElementById('xAxis').value);
+            const yAxis = parseInt(document.getElementById('yAxis').value);
+            backgroundImageUrl = document.getElementById('backgroundImageUrl').value;
+            document.getElementById('backgroundImage').src = backgroundImageUrl;
+            generateGrid(name, xAxis, yAxis, 'gridContainer', 'grid-item', handleOuterGridItemClick);
+        });
+
+        document.getElementById('makeBoxesButton').addEventListener('click', function() {
+            makeBoxesMode = !makeBoxesMode;
+            document.getElementById('colorPicker').style.display = makeBoxesMode ? 'inline' : 'none';
+            document.getElementById('colorInfo').style.display = makeBoxesMode ? 'inline' : 'none';
+            document.getElementById('updateBoxesButton').disabled = makeBoxesMode;
+            if (makeBoxesMode) {
+                selectedColor = document.getElementById('colorPicker').value;
+                updateColorInfo();
+                clearSelectedBoxes();
+            }
+        });
+
+        document.getElementById('colorPicker').addEventListener('input', function(event) {
+            selectedColor = event.target.value;
+        });
+
+        document.getElementById('updateBoxesButton').addEventListener('click', function() {
+            const xAxis = parseInt(prompt("Enter the new number of boxes on x-axis:"));
+            const yAxis = parseInt(prompt("Enter the new number of boxes on y-axis:"));
+            if (xAxis > 0 && yAxis > 0) {
+                selectedBoxes.forEach(box => {
+                    const coords = box.dataset.coordinates;
+                    updatedBoxes[coords] = {
+                        originalPos: { x: parseInt(coords.split(',')[0]), y: parseInt(coords.split(',')[1]) },
+                        newSize: { x: xAxis, y: yAxis },
+                        innerGridPoints: generateInnerGrid(xAxis, yAxis, box, coords)
+                    };
+                });
+                clearSelectedBoxes();
+            }
+        });
+
+        document.getElementById('submitBoxesButton').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const mainSize = {
+                x: parseInt(document.getElementById('xAxis').value),
+                y: parseInt(document.getElementById('yAxis').value)
+            };
+            const areaData = {
+                name,
+                mainSize,
+                backgroundImage: backgroundImageUrl,
+                colorPoints: Object.entries(clickedBoxes).map(([color, points]) => ({ color, points })),
+                updatedBoxes: Object.entries(updatedBoxes).map(([originalPos, { originalPos: { x, y }, newSize, innerGridPoints }]) => ({
+                    originalPos: { x, y },
+                    newSize,
+                    innerGridPoints
+                }))
+            };
+
+            console.log(JSON.stringify(areaData, null, 2));
+        });
+
+        document.getElementById('loadJsonButton').addEventListener('click', function() {
+            const jsonInput = document.getElementById('jsonInput').value;
+            try {
+                const data = JSON.parse(jsonInput);
+                loadAreaData(data);
+            } catch (error) {
+                alert('Invalid JSON data');
+            }
+        });
+
+        function loadAreaData(data) {
+            document.getElementById('name').value = data.name;
+            document.getElementById('xAxis').value = data.mainSize.x;
+            document.getElementById('yAxis').value = data.mainSize.y;
+            backgroundImageUrl = data.backgroundImage;
+            document.getElementById('backgroundImage').src = backgroundImageUrl;
+
+            Object.keys(clickedBoxes).forEach(key => delete clickedBoxes[key]);
+            Object.keys(updatedBoxes).forEach(key => delete updatedBoxes[key]);
+
+            data.colorPoints.forEach(({ color, points }) => {
+                clickedBoxes[color] = points;
+            });
+
+            data.updatedBoxes.forEach(({ originalPos, newSize, innerGridPoints }) => {
+                updatedBoxes[`${originalPos.x},${originalPos.y}`] = {
+                    originalPos,
+                    newSize,
+                    innerGridPoints
+                };
+            });
+
+            generateGrid(data.name, data.mainSize.x, data.mainSize.y, 'gridContainer', 'grid-item', handleOuterGridItemClick);
+        }
+
+        function generateGrid(name, x, y, container, itemClass, itemClickHandler) {
+            const gridContainer = typeof container === 'string' ? document.getElementById(container) : container;
+            gridContainer.innerHTML = '';
+            gridContainer.style.gridTemplateColumns = `repeat(${x}, 1fr)`;
+            gridContainer.style.gridTemplateRows = `repeat(${y}, 1fr)`;
+            if (typeof container === 'string') {
+                selectedBoxes.clear();
+                document.getElementById('updateBoxesButton').disabled = true;
+            }
+
+            for (let i = 0; i < x * y; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = itemClass;
+                const xCoordinate = i % x;
+                const yCoordinate = Math.floor(i / x);
+                gridItem.dataset.coordinates = `${xCoordinate},${yCoordinate}`;
+                gridItem.dataset.name = name; // Store the name
+                gridItem.addEventListener('click', itemClickHandler);
+                gridContainer.appendChild(gridItem);
+            }
+
+            // Apply saved colors
+            for (const [color, points] of Object.entries(clickedBoxes)) {
+                points.forEach(point => {
+                    const gridItem = gridContainer.querySelector(`[data-coordinates="${point}"]`);
+                    if (gridItem) {
+                        gridItem.style.backgroundColor = color;
+                    }
+                });
+            }
+
+            // Generate inner grids for updated boxes
+            for (const { originalPos, newSize, innerGridPoints } of Object.values(updatedBoxes)) {
+                const outerGridItem = gridContainer.querySelector(`[data-coordinates="${originalPos.x},${originalPos.y}"]`);
+                if (outerGridItem) {
+                    generateInnerGrid(newSize.x, newSize.y, outerGridItem, `${originalPos.x},${originalPos.y}`);
+                    // Apply colors to inner grid items
+                    for (const color of Object.keys(clickedBoxes)) {
+                        innerGridPoints.forEach(point => {
+                            const innerGridItem = outerGridItem.querySelector(`[data-coordinates="${point}"]`);
+                            if (innerGridItem) {
+                                if (clickedBoxes[color].includes(`${originalPos.x},${originalPos.y}-${point}`)) {
+                                    innerGridItem.style.backgroundColor = color;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        function generateInnerGrid(x, y, container, originCoords) {
+            container.innerHTML = ''; // Clear the container content
+            container.classList.add('inner-grid-container');
+            container.style.gridTemplateColumns = `repeat(${x}, 1fr)`;
+            container.style.gridTemplateRows = `repeat(${y}, 1fr)`;
+            container.style.gap = '0';
+
+            const innerGridCoordinates = [];
+
+            for (let i = 0; i < x * y; i++) {
+                const innerGridItem = document.createElement('div');
+                innerGridItem.className = 'inner-grid-item';
+                innerGridItem.style.zIndex = '2'; // Ensure inner grid items are on top
+                const xCoordinate = i % x;
+                const yCoordinate = Math.floor(i / x);
+                innerGridItem.dataset.coordinates = `${xCoordinate},${yCoordinate}`;
+                innerGridItem.dataset.origin = originCoords; // Store the origin coordinates
+                innerGridItem.addEventListener('click', handleInnerGridItemClick);
+                container.appendChild(innerGridItem);
+
+                innerGridCoordinates.push(`${xCoordinate},${yCoordinate}`);
+            }
+
+            return innerGridCoordinates; // Return the inner grid coordinates for the updated box
+        }
+
+        function handleOuterGridItemClick(event) {
+            const gridItem = event.target;
+            const coords = gridItem.dataset.coordinates;
+            if (makeBoxesMode) {
+                handleColorChange(gridItem, coords);
+            } else {
+                if (gridItem.classList.toggle('selected')) {
+                    selectedBoxes.add(gridItem);
+                } else {
+                    selectedBoxes.delete(gridItem);
+                }
+                document.getElementById('updateBoxesButton').disabled = selectedBoxes.size === 0;
+            }
+        }
+
+        function handleInnerGridItemClick(event) {
+            event.stopPropagation(); // Prevent event from bubbling up
+            const gridItem = event.target;
+            const coords = gridItem.dataset.coordinates;
+            const originCoords = gridItem.dataset.origin; // Get the origin coordinates
+            const fullCoords = `${originCoords}-${coords}`; // Combine origin and inner coordinates
+
+            if (makeBoxesMode) {
+                handleColorChange(gridItem, fullCoords);
+            } else {
+                if (gridItem.classList.toggle('selected')) {
+                    selectedBoxes.add(gridItem);
+                } else {
+                    selectedBoxes.delete(gridItem);
+                }
+                document.getElementById('updateBoxesButton').disabled = selectedBoxes.size === 0;
+            }
+        }
+
+        function handleColorChange(gridItem, coords) {
+            if (gridItem.style.backgroundColor === selectedColor || rgbToHex(gridItem.style.backgroundColor) === selectedColor) {
+                gridItem.style.backgroundColor = 'rgba(48, 104, 16, 0.7)'; // Reset to original color with opacity
+                if (clickedBoxes[selectedColor]) {
+                    clickedBoxes[selectedColor] = clickedBoxes[selectedColor].filter(c => c !== coords);
+                    if (clickedBoxes[selectedColor].length === 0) {
+                        delete clickedBoxes[selectedColor];
+                    }
+                }
+            } else {
+                gridItem.style.backgroundColor = selectedColor;
+                if (!clickedBoxes[selectedColor]) {
+                    clickedBoxes[selectedColor] = [];
+                }
+                if (!clickedBoxes[selectedColor].includes(coords)) {
+                    clickedBoxes[selectedColor].push(coords);
+                }
+            }
+            updateColorInfo();
+        }
+
+        function rgbToHex(rgb) {
+            const rgbArray = rgb.replace(/[^\d,]/g, '').split(',');
+            const hex = rgbArray.map(x => {
+                const hex = parseInt(x).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+            return `#${hex}`;
+        }
+
+        function updateColorInfo() {
+            const colorInfo = document.getElementById('colorInfo');
+            colorInfo.innerHTML = '';
+            for (const [color, coordinates] of Object.entries(clickedBoxes)) {
+                if (coordinates.length > 0) {
+                    const option = document.createElement('option');
+                    option.value = color;
+                    option.textContent = color;
+                    option.style.backgroundColor = color;
+                    option.style.color = getContrastYIQ(color); // Ensure text is readable
+                    colorInfo.appendChild(option);
+                }
+            }
+        }
+
+        function getContrastYIQ(hexcolor) {
+            hexcolor = hexcolor.replace("#", "");
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? 'black' : 'white';
+        }
+
+        function selectSavedColor(select) {
+            selectedColor = select.value;
+            document.getElementById('colorPicker').value = selectedColor;
+        }
+
+        function clearSelectedBoxes() {
+            selectedBoxes.forEach(box => box.classList.remove('selected'));
+            selectedBoxes.clear();
+            document.getElementById('updateBoxesButton').disabled = true;
+        }
+    </script>
+</body>
+</html>

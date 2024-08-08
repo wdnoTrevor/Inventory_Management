@@ -1,3 +1,8 @@
+// const farmBedRouter = require('./routes/beds');
+// const productRouter = require('./routes/products');
+// const areaRouter = require('./routes/areas');
+
+
 const express = require('express');
 const app = express();
 const ejs = require('ejs');
@@ -11,6 +16,8 @@ const methodOverride = require('method-override');
 
 const FarmBed = require('../models/farmBed');
 const Product = require('../models/product');
+const Area = require('../models/area');
+
 const NestObject = require('../utils/dataTrans');
 const getTotalWeights  = require('../utils/aggregate'); // Import the aggregation function
 const { find } = require('lodash');
@@ -37,17 +44,17 @@ mongoose.connect('mongodb://localhost:27017/fff')
 
 
     
-// const insertProduce = new FarmBed({bed:{name: 'trevor'}})
-// insertProduce.save()
-// .then(() => {
-//     // console.log(data)
-//     console.log("you have yourself some date")
+// // const insertProduce = new FarmBed({bed:{name: 'trevor'}})
+// // insertProduce.save()
+// // .then(() => {
+// //     // console.log(data)
+// //     console.log("you have yourself some date")
     
-// }) 
-// .catch((err) => {
-//     console.log(err)
-//     console.log("error big dawg")
-// }) 
+// // }) 
+// // .catch((err) => {
+// //     console.log(err)
+// //     console.log("error big dawg")
+// // }) 
 
 
 // const insertProduce = FarmBed.insertMany([
@@ -172,10 +179,28 @@ mongoose.connect('mongodb://localhost:27017/fff')
 // }) 
 
 
-app.get('/farm',  async (req,res) => {
+app.get('/areas',  async (req,res) => {
 
-res.render('farm/farmGenerator');
+res.render('area/areaGenerator');
 });
+app.get('/areas/create',  async (req,res) => {
+
+res.render('area/areaGenerator');
+});
+app.get('/areas/:id',  async (req,res) => {
+
+res.render('area/areaGenerator');
+});
+app.get('/areas/:id/update',  async (req,res) => {
+
+res.render('area/areaGenerator');
+});
+app.get('/:id/beds',  async (req,res) => {
+
+res.render('area/areaGenerator');
+});
+
+
 app.get('/beds',  async (req,res) => {
 const farmBed = await FarmBed.find({})
 // console.log(farmBed)
@@ -243,14 +268,25 @@ app.get('/products/:id', async (req,res) => {
     const author = product.author;
     const products = await Product.find({ author:author }).populate('author');
 
-    // console.log(author);
     const farmBed = await FarmBed.find(author);
+    console.log(farmBed + "heeyeyyyy");
+
     // console.log(farmBed[0].bed.name);
     // console.log(products)
 
     res.render('products/pDetails', {product, farmBed, products});
     });
-    
+
+app.get('/:id/product/create', async (req,res) => {
+        const {id} = req.params;
+        const farmBed = await FarmBed.findById(id)
+        console.log(farmBed.author)
+        
+        // console.log(farmBed)
+        const pCreateForm = req.body
+        res.render('products/pCreate',{farmBed});
+        })
+        
 app.get('/products/:id/update', async (req,res) => {
     const {id} = req.params;
     const product = await Product.findById(id);
@@ -397,15 +433,6 @@ const createProduct = await new Product (incoming);
 res.redirect(`/beds/${farmBed._id}`);
 })
 
-app.get('/:id/product/create', async (req,res) => {
-const {id} = req.params;
-const farmBed = await FarmBed.findById(id)
-console.log(farmBed.author)
-
-// console.log(farmBed)
-const pCreateForm = req.body
-res.render('products/pCreate',{farmBed});
-})
 
 app.put('/beds/:id', async (req,res) => {
 const {id} = req.params
@@ -572,7 +599,9 @@ app.delete('/products/:id', async (req, res) => {
 });
 
 
-
+// app.use('/areas', areaRouter);
+// app.use('/beds', farmBedRouter);
+// app.use('/products', productRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
