@@ -44,130 +44,8 @@ mongoose.connect('mongodb://localhost:27017/fff')
 
 
     
-// // const insertProduce = new FarmBed({bed:{name: 'trevor'}})
-// // insertProduce.save()
-// // .then(() => {
-// //     // console.log(data)
-// //     console.log("you have yourself some date")
-    
-// // }) 
-// // .catch((err) => {
-// //     console.log(err)
-// //     console.log("error big dawg")
-// // }) 
-
-
-// const insertProduce = FarmBed.insertMany([
-//     {
-//       bed: {
-//         name: 'Bed1',
-//         size: {
-//           x: 200,
-//           y: 150
-//         },
-//         pos: {
-//           hor: 10,
-//           ver: 5
-//         }
-//       },
-//       item: {
-//         name: 'Apple1',
-//         weight: 100,
-//         totalWeight: 100
-//       }
-//     },
-//     {
-//       bed: {
-//         name: 'Bed2',
-//         size: {
-//           x: 250,
-//           y: 160
-//         },
-//         pos: {
-//           hor: 15,
-//           ver: 10
-//         }
-//       },
-//       item: {
-//         name: 'Apple2',
-//         weight: 150,
-//         totalWeight: 150
-//       }
-//     },
-//     {
-//       bed: {
-//         name: 'Bed3',
-//         size: {
-//           x: 180,
-//           y: 140
-//         },
-//         pos: {
-//           hor: 12,
-//           ver: 8
-//         }
-//       },
-//       item: {
-//         name: 'Apple3',
-//         weight: 200,
-//         totalWeight: 200
-//       }
-//     },
-//     {
-//       bed: {
-//         name: 'Bed4',
-//         size: {
-//           x: 220,
-//           y: 170
-//         },
-//         pos: {
-//           hor: 20,
-//           ver: 15
-//         }
-//       },
-//       item: {
-//         name: 'Apple4',
-//         weight: 250,
-//         totalWeight: 250
-//       }
-//     },
-//     {
-//       bed: {
-//         name: 'Bed5',
-//         size: {
-//           x: 210,
-//           y: 160
-//         },
-//         pos: {
-//           hor: 18,
-//           ver: 12
-//         }
-//       },
-//       item: {
-//         name: 'Apple5',
-//         weight: 300,
-//         totalWeight: 300
-//       }
-//     },
-//     {
-//       bed: {
-//         name: 'Bed6',
-//         size: {
-//           x: 230,
-//           y: 180
-//         },
-//         pos: {
-//           hor: 25,
-//           ver: 20
-//         }
-//       },
-//       item: {
-//         name: 'Apple6',
-//         weight: 350,
-//         totalWeight: 350
-//       }
-//     }
-//   ])
-
+// const insertProduce = new FarmBed({bed:{name: 'trevor'}})
+// insertProduce.save()
 // .then(() => {
 //     // console.log(data)
 //     console.log("you have yourself some date")
@@ -179,25 +57,62 @@ mongoose.connect('mongodb://localhost:27017/fff')
 // }) 
 
 
-app.get('/areas',  async (req,res) => {
 
-res.render('area/areaGenerator');
+
+app.get('/area',  async (req,res) => {
+    
+res.render('area/aHome');
 });
-app.get('/areas/create',  async (req,res) => {
+app.get('/area/create',  async (req,res) => {
 
-res.render('area/areaGenerator');
+res.render('area/aCreate');
 });
-app.get('/areas/:id',  async (req,res) => {
+app.post('/area', async (req, res) => {
+    try {
+        const { name, xAxis, yAxis, backgroundImageUrl, colorPoints, updatedBoxes } = req.body;
 
-res.render('area/areaGenerator');
+        // Parse the JSON strings back into objects
+        const parsedColorPoints = JSON.parse(colorPoints);
+        const parsedUpdatedBoxes = JSON.parse(updatedBoxes);
+
+        // Create the area data
+        const areaData = {
+            name,
+            mainSize: { x: parseInt(xAxis), y: parseInt(yAxis) },
+            backgroundImage: backgroundImageUrl,
+            colorPoints: parsedColorPoints,  // Correctly parsed object
+            updatedBoxes: parsedUpdatedBoxes // Correctly parsed object
+        };
+
+        // Log the complete areaData object with expanded arrays and objects
+        console.log(JSON.stringify(areaData, null, 2));
+
+        // Create a new Area instance with the areaData object
+        const newArea = new Area(areaData);
+
+        // Save the new area to the database
+        await newArea.save();
+
+        res.redirect('/area');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Error creating area', error });
+    }
 });
-app.get('/areas/:id/update',  async (req,res) => {
 
-res.render('area/areaGenerator');
+
+
+app.get('/area/:id',  async (req,res) => {
+
+res.render('area/aDetails');
 });
-app.get('/:id/beds',  async (req,res) => {
+app.get('/area/:id/update',  async (req,res) => {
 
-res.render('area/areaGenerator');
+res.render('area/aCreate');
+});
+app.get('/:id/beds',  async (req,res) => {//beds associated with the area
+
+res.render('area/aCreate');
 });
 
 

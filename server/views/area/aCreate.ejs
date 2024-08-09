@@ -101,7 +101,7 @@
 </head>
 <body>
     <div id="formContainer">
-        <form id="gridForm">
+        <form id="gridForm" action="/area" method="POST">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
             <label for="xAxis">X:</label>
@@ -110,8 +110,14 @@
             <input type="number" id="yAxis" name="yAxis" min="1" required>
             <label for="backgroundImageUrl">Background Image URL:</label>
             <input type="text" id="backgroundImageUrl" name="backgroundImageUrl" required>
+            
+            <!-- Hidden fields to store grid data -->
+            <input type="hidden" id="colorPointsField" name="colorPoints">
+            <input type="hidden" id="updatedBoxesField" name="updatedBoxes">
+            
             <button type="submit">Generate Grid</button>
         </form>
+        
         <button id="makeBoxesButton">Make boxes</button>
         <input type="color" id="colorPicker" style="display:none;">
         <select id="colorInfo" style="display:none;" onchange="selectSavedColor(this)"></select>
@@ -174,27 +180,35 @@
                 clearSelectedBoxes();
             }
         });
-
         document.getElementById('submitBoxesButton').addEventListener('click', function() {
-            const name = document.getElementById('name').value;
-            const mainSize = {
-                x: parseInt(document.getElementById('xAxis').value),
-                y: parseInt(document.getElementById('yAxis').value)
-            };
-            const areaData = {
-                name,
-                mainSize,
-                backgroundImage: backgroundImageUrl,
-                colorPoints: Object.entries(clickedBoxes).map(([color, points]) => ({ color, points })),
-                updatedBoxes: Object.entries(updatedBoxes).map(([originalPos, { originalPos: { x, y }, newSize, innerGridPoints }]) => ({
-                    originalPos: { x, y },
-                    newSize,
-                    innerGridPoints
-                }))
-            };
+    const name = document.getElementById('name').value;
+    const mainSize = {
+        x: parseInt(document.getElementById('xAxis').value),
+        y: parseInt(document.getElementById('yAxis').value)
+    };
+    const backgroundImageUrl = document.getElementById('backgroundImageUrl').value;
 
-            console.log(JSON.stringify(areaData, null, 2));
-        });
+    // Serialize the grid data
+    const areaData = {
+        name,
+        mainSize,
+        backgroundImage: backgroundImageUrl,
+        colorPoints: Object.entries(clickedBoxes).map(([color, points]) => ({ color, points })),
+        updatedBoxes: Object.entries(updatedBoxes).map(([originalPos, { originalPos: { x, y }, newSize, innerGridPoints }]) => ({
+            originalPos: { x, y },
+            newSize,
+            innerGridPoints
+        }))
+    };
+
+    // Update the hidden fields with the serialized data
+    document.getElementById('colorPointsField').value = JSON.stringify(areaData.colorPoints);
+    document.getElementById('updatedBoxesField').value = JSON.stringify(areaData.updatedBoxes);
+
+    // Submit the form
+    document.getElementById('gridForm').submit();
+});
+
 
         document.getElementById('loadJsonButton').addEventListener('click', function() {
             const jsonInput = document.getElementById('jsonInput').value;
