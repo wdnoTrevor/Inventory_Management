@@ -1,2 +1,21 @@
-<h1>heellooo a home</h1>
-<a href="/area/create">Create Area</a>
+<%- include('../partials/headerHome') %>
+<!--  -->
+<%- include('../partials/navbar') %>
+<body>
+    
+
+<h1>Farm Areas</h1>
+<div class="container-fluid text-center">
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 color roboto-bold">
+<% for (let area of findAreas) { %>
+    <div class="col grid-item" style="background-image: url('<%= area.backgroundImage %>');">
+        <a id="bedAncor" href="#" class="text"><%= area.name %></a>
+      </div>
+<% } %>
+<div class="col grid-item bg-success">
+    <a id="bedAncor" href="/area/create" class="text">Create Area</a>
+  </div>
+</div>
+</div>
+</body>
+<%- include('../partials/footer') %>

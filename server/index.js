@@ -60,8 +60,12 @@ mongoose.connect('mongodb://localhost:27017/fff')
 
 
 app.get('/area',  async (req,res) => {
-    
-res.render('area/aHome');
+const findAreas = await Area.find({});
+// console.log(JSON.stringify(findAreas, null, 2));
+const allAreas = JSON.stringify(findAreas, null, 2);
+
+// console.log(findAreas);
+res.render('area/aHome', {findAreas});
 });
 app.get('/area/create',  async (req,res) => {
 
@@ -85,7 +89,7 @@ app.post('/area', async (req, res) => {
         };
 
         // Log the complete areaData object with expanded arrays and objects
-        console.log(JSON.stringify(areaData, null, 2));
+        // console.log(JSON.stringify(areaData, null, 2));
 
         // Create a new Area instance with the areaData object
         const newArea = new Area(areaData);
